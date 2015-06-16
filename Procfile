@@ -9,7 +9,6 @@ worker_buildapi_pending: newrelic-admin run-program celery -A treeherder worker 
 worker_buildapi_running: newrelic-admin run-program celery -A treeherder worker -Q buildapi_running --maxtasksperchild=20 --concurrency=5
 worker_buildapi_4hr_1: newrelic-admin run-program celery -A treeherder worker -Q buildapi_4hr --maxtasksperchild=20
 worker_buildapi_4hr_2: newrelic-admin run-program celery -A treeherder worker -Q buildapi_4hr --maxtasksperchild=20
-worker_buildapi_4hr_3: newrelic-admin run-program celery -A treeherder worker -Q buildapi_4hr --maxtasksperchild=20
 worker_default: newrelic-admin run-program celery -A treeherder worker -Q default,process_objects,cycle_data,calculate_eta,populate_performance_series,fetch_bugs --maxtasksperchild=50 --concurrency=3
 worker_hp: newrelic-admin run-program celery -A treeherder worker -Q classification_mirroring,publish_to_pulse --maxtasksperchild=50 --concurrency=1
 worker_log_parser: newrelic-admin run-program celery -A treeherder worker -Q log_parser_fail,log_parser,log_parser_hp,log_parser_json --maxtasksperchild=50 --concurrency=5
