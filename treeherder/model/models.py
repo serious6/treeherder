@@ -230,12 +230,8 @@ class Datasource(models.Model):
             if not self.type:
                 self.type = "mysql"
 
-            self.oauth_consumer_key = None
-            self.oauth_consumer_secret = None
-
-            if self.contenttype == 'objectstore':
-                self.oauth_consumer_key = uuid.uuid4()
-                self.oauth_consumer_secret = uuid.uuid4()
+            self.oauth_consumer_key = uuid.uuid4()
+            self.oauth_consumer_secret = uuid.uuid4()
 
         # validate the model before saving
         self.full_clean()
