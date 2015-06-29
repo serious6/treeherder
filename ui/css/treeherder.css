@@ -576,11 +576,11 @@ th-watched-repo {
     margin: 0 -3px 0 3px;
 }
 
-.job-btn {
+.job-btn, .group-btn {
   padding: 0 2px 0 2px;
   vertical-align: 0;
   line-height: 1.32;
-  display: none;
+  /*display: none;*/
 }
 
 .filter-shown {

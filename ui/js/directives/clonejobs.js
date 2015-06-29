@@ -165,8 +165,31 @@ treeherder.directive('thCloneJobs', [
         $rootScope.$emit(thEvents.jobPin, job);
     };
 
+    var getJobsMostSevereShownResultState = function(jgObj, jobGroup) {
+        var resultState, job, l;
+        var worstResultState = null;
+
+        for(l=0; l<jgObj.jobs.length; l++){
+
+            job = jgObj.jobs[l];
+
+            //Set the resultState
+            resultState = thResultStatus(job);
+            if (thJobFilters.showJob(job)) {
+                worstResultState = resultState;
+                if (_.includes(["busted", "testfailed", "exception"], resultState)) {
+                    worstResultState = resultState;
+                }
+            }
+        }
+        var jobStatus = thResultStatusInfo(worstResultState);
+        jobGroup.addClass(jobStatus.btnClass);
+
+        return worstResultState;
+    };
+
     var addJobBtnEls = function(
-        jgObj, jobBtnInterpolator, jobTdEl){
+        jgObj, jobBtnInterpolator, jobTdEl) {
 
         var jobsShown = 0;
 
@@ -391,20 +414,17 @@ treeherder.directive('thCloneJobs', [
     };
 
     var renderJobTableRow = function(
-        row, jobTdEl, jobGroups, resultsetId,
-        platformKey){
+        row, jobTdEl, jobGroups){
 
         //Empty the job column before populating it
         jobTdEl.empty();
 
-        var resultSetMap = ThResultSetStore.getResultSetsMap($rootScope.repoName);
-
-        var jgObj, jobGroup, jobsShown, i;
-        for(i=0; i<jobGroups.length; i++){
+        var jgObj, jobGroup, jobsMostSevereShownResultState, i;
+        for(i = 0; i < jobGroups.length; i++){
 
             jgObj = jobGroups[i];
 
-            jobsShown = 0;
+            jobsMostSevereShownResultState = null;
             if(jgObj.symbol !== '?'){
                 // Job group detected, add job group symbols
                 jobGroup = $( jobGroupInterpolator(jobGroups[i]) );
@@ -412,15 +432,19 @@ treeherder.directive('thCloneJobs', [
                 jobTdEl.append(jobGroup);
 
                 // Add the job btn spans
-                jobsShown = addJobBtnEls(
-                    jgObj, jobBtnInterpolator, jobGroup.find(".job-group-list"));
-                jobGroup.css("display", jobsShown? "inline": "none");
+//                jobsShown = addJobBtnEls(
+//                    jgObj, jobBtnInterpolator, jobGroup.find(".job-group-list"));
+                jobsMostSevereShownResultState = getJobsMostSevereShownResultState(jgObj, jobGroup);
+                console.log("group to show", jgObj.name, jobsMostSevereShownResultState, jobsMostSevereShownResultState? "inline": "none");
+                jobGroup.css("display", jobsMostSevereShownResultState? "inline": "none");
+                if (jobsMostSevereShownResultState) {
+                    jobGroup.find(".job-group-list").append('<span class="filter-shown">...</span>');
+                }
 
-            }else{
+            } else {
 
                 // Add the job btn spans
-                jobsShown = addJobBtnEls(
-                    jgObj, jobBtnInterpolator, jobTdEl);
+                addJobBtnEls(jgObj, jobBtnInterpolator, jobTdEl);
 
             }
         }
